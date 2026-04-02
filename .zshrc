@@ -126,3 +126,5 @@ export NVM_DIR="$HOME/.nvm"
 
 export _ZO_RESOLVE_SYMLINKS=1
 eval "$(zoxide init zsh --cmd cd)"
+# bun completions
+[ -s "/Users/christiangonzales/.bun/_bun" ] && source "/Users/christiangonzales/.bun/_bun"

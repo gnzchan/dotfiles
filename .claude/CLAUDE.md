@@ -182,3 +182,14 @@ When multiple valid approaches exist, choose based on:
 - Stop after 3 failed attempts and reassess
 - Remember that using `any` type is not recommended. Only use it as an absolute last resort. Otherwise, use the correct type based on the context
 - NEVER EVER REMOVE .plan directory
+
+## Writing Messages for User
+
+When asked to draft a message (for Slack, WhatsApp, email, etc.):
+
+- **Keep it dead simple** — the audience is usually non-technical (CEO, stakeholders). No jargon, no technical terms unless absolutely necessary.
+- **Short sentences, plain language** — write like you're texting, not writing docs.
+- **No tables** — use plain text. If comparing costs, write it in a sentence.
+- **No "at volume" or vague qualifiers** — use concrete numbers or don't mention it.
+- **Lead with what matters** — what's needed, why, and what it costs. Skip the how unless asked.
+- **Iterate fast** — when user says "simpler", go simpler. Don't re-add complexity.

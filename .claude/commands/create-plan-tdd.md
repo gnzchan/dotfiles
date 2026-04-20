@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(mkdir:*), Bash(cursor:*), Write
+allowed-tools: Bash(mkdir:*), Bash(zed:*), Write
 description: Create a Test-Driven Development implementation plan aligned with development guidelines
 ---
 
@@ -32,7 +32,7 @@ You are tasked with creating a Test-Driven Development (TDD) implementation plan
 2. **Analyze** the user's requirements: {{ARGS}}
 3. **Identify testing strategy** - Determine unit, integration, and end-to-end test requirements
 4. Create the TDD implementation plan in `.plan/` directory
-5. After creating the plan file, automatically open it in the user's active IDE using: `cursor -r ./.plan/{file_name}`
+5. After creating the plan file, automatically open it in the user's active IDE using: `zed ./.plan/{file_name}`
 6. Present the plan and wait for feedback
 
 ## Required TDD Plan Structure

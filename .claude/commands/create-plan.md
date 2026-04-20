@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(mkdir:*), Bash(cursor:*), Write
+allowed-tools: Bash(mkdir:*), Bash(zed:*), Write
 description: Create a staged implementation plan aligned with development guidelines
 ---
 
@@ -26,7 +26,7 @@ You are tasked with creating an implementation plan aligned with the development
 1. **Understand** - Study existing codebase patterns and conventions
 2. **Analyze** the user's requirements: {{ARGS}}
 3. Create the implementation plan in `.plan/` directory
-4. After creating the plan file, automatically open it in the user's active IDE using: `cursor -r ./.plan/{file_name}`
+4. After creating the plan file, automatically open it in the user's active IDE using: `zed ./.plan/{file_name}`
 5. Present the plan and wait for feedback
 
 ## Required Plan Structure

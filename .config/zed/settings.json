@@ -17,7 +17,7 @@
     "model_parameters": []
   },
   "agent_ui_font_size": 14.0,
-  "buffer_font_family": ".ZedMono",
+  "buffer_font_family": "Menlo",
   "telemetry": {
     "diagnostics": false,
     "metrics": false

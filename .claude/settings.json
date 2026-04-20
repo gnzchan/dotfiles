@@ -14,5 +14,9 @@
         "repo": "pbakaus/impeccable"
       }
     }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "sh /Users/christiangonzales/.claude/statusline-command.sh"
   }
 }

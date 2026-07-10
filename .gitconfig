@@ -3,3 +3,5 @@
 	email = chrisgonzales.online@gmail.com
 [pull]
 	rebase = true
+[merge]
+	ff = false

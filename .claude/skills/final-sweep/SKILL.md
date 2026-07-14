@@ -145,7 +145,24 @@ saying when it can be deleted and, when a tracker exists, the ticket ID.
 
 ## Pass 4: DRY, with restraint
 
-Look for repetition inside the swept files. Extract only when it is real:
+Two moves hide under "DRY", and only one is governed by the restraint below.
+**Reuse** is calling a function that already exists instead of re-typing its
+body. **Extract** is factoring a new helper out of repetition. Check reuse
+first: it is almost always the cheaper fix, and the change that just landed is
+the most likely place a new block silently re-implements an existing one.
+
+**Reuse.** When a new block re-implements the body of a function that already
+exists, call that function instead. This adds no new abstraction, so the "two
+occurrences" restraint below does not apply: even a single duplicated copy of
+an existing function's body should just call the function. Trace bodies, not
+names. For example, a new `clearAll` that runs `setStateRaw('')` then
+`setCounty([])` is re-typing the body of the existing `setState('')`, so it
+should call `setState('')`. One guard: reuse only when the existing function's
+contract matches your intent, same reason and not just the same lines. Do not
+route through a function whose meaning diverges from what you need just because
+the code happens to match.
+
+**Extract.** Only when the repetition is real:
 
 - Three or more occurrences of the same multi-line block: extract a small
   local helper.

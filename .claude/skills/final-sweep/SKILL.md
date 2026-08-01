@@ -29,15 +29,33 @@ git diff --name-only <base-branch>...HEAD
 git status --short   # plus anything uncommitted
 ```
 
-Do not wander into untouched files, even when they have the same problems.
-Pre-existing mess is a separate task the user has to ask for. One
-exception: a one-line fix directly adjacent to your change (an unused
-import your edit exposed, for example) is fine. Note it when reporting.
+Do not wander into untouched files, even when they have the same problems;
+that is a separate task the user has to ask for.
+
+Inside the files the change touched, sweep every comment, not just the lines
+the change added. Authorship is invisible to the reviewer: a pre-existing
+comment in a file already in the diff wastes their attention exactly as much
+as one you just wrote, and removing it is behavior-neutral and diff-cheap. So
+Pass 1 (comment audit) and Pass 2 (humanizer) apply to the whole of each
+swept file, regardless of which commit introduced a given comment. "It was
+already there" is not a reason to keep noise in a file you are already
+editing.
+
+Pre-existing *logic* is the opposite: do not refactor, re-flow, or re-scope
+code the change did not touch. The one exception is a one-line fix directly
+adjacent to your change (an unused import your edit exposed, for example).
+Note in the report anything you swept that the change itself did not
+introduce, so the reviewer knows why those lines moved.
 
 ## Pass 1: comment audit
 
-Read every comment in the swept files and apply the test: **does this state
-something the code cannot say?** Keep it only if yes.
+Read every comment in the swept files — every one, not only the comments
+this change wrote — and apply the test: **does this state something the code
+cannot say?** Keep it only if yes. A four-line header that predates your work
+but narrates the helpers below it is exactly the kind of noise a reviewer
+shouldn't have to wade through; trim it to the one clause that carries a real
+constraint (a gotcha, a why, an invariant) and drop the rest, relocating that
+surviving clause to where it belongs if the header sat far from it.
 
 | Kill | Keep |
 | --- | --- |

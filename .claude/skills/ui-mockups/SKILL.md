@@ -63,6 +63,16 @@ eyeball palettes.
   and 2–4 "what changes" notes (scope, risk, feel).
 - Keep the page chrome quiet (eyebrow labels, hairlines); the demos are the
   show. Respect `prefers-reduced-motion` in any animated affordance.
+- **When the thing being designed is an insert into an existing component or
+  flow (a nudge in a modal, a field in a form, a badge in a row), render the
+  REAL host component with the variant slotted in, not a hand-drawn stand-in.**
+  A mimicked container reads as unfamiliar and the user can't tell where the
+  new piece actually lands. Add a minimal optional slot prop to the host
+  (e.g. `nudge?: ReactNode`, defaults to nothing so production is unchanged),
+  drive it from the mockup, and mount the host live (feed it mock props / let
+  it hit real dev data). That slot is usually the real integration seam, so it
+  carries into implementation rather than being thrown away. Give the user a
+  variant toggle so each option renders inside the same real host.
 
 ## Step 4: present and decide
 

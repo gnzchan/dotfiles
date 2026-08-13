@@ -76,7 +76,13 @@ eyeball palettes.
 
 ## Step 4: present and decide
 
-- Tell the user the route URL and how the options map to the axes, and
+- **Never start the dev server.** No `bun dev`, `npm run dev`, or any
+  equivalent, in the foreground or the background. The user runs their own
+  server and owns that port. Hand over the route path and let them load it.
+  Same for stopping one: if a server is already running, leave it alone.
+- Verify with the project's static checks instead — typecheck, lint,
+  formatter. Those catch what a browser would have, without touching a port.
+- Tell the user the route path and how the options map to the axes, and
   invite cherry-picking across options ("Option 2's overlay with Option 4's
   drawer") — the axes make hybrids cheap.
 - Iterate in place: edit the option components, hot reload does the rest.
@@ -100,6 +106,8 @@ The route is throwaway. Once the user decides:
   feedback like "3 but with 1's affordance" is unambiguous.
 - **Don't skip the weird one.** At least one option should take a real
   risk; identical-but-recolored options waste the exercise.
+- **The server is the user's.** Build the route, prove it compiles, hand over
+  the path. Starting a dev server is never part of this skill.
 
 ## Related skills
 

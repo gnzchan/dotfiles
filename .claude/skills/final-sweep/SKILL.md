@@ -62,9 +62,20 @@ as one you just wrote, and removing it is behavior-neutral and diff-cheap. "It
 was already there" is not a reason to keep noise in a file you are already
 editing.
 
-Pre-existing *logic* is the opposite: do not refactor, re-flow, or re-scope
-code the change did not touch. The one exception is a one-line fix directly
-adjacent to your change (an unused import your edit exposed, for example).
+Pre-existing *live* logic is the opposite: do not refactor, re-flow, or
+re-scope working code the change did not touch. The one exception is a one-line
+fix directly adjacent to your change (an unused import your edit exposed, for
+example).
+
+Dead code is not live logic, and this rule does not shelter it. Anything pass 2
+proves is dead inside a swept file gets deleted, however long it has been
+there: a return field nobody reads, a branch nothing can reach, an arg every
+caller passes the same literal for. Deleting it is behavior-neutral by
+definition, which is what puts it on the same footing as a comment and not on
+the same footing as a refactor. "It predates the change" and "removing it edits
+a signature" are both restatements of "it is dead", so neither one downgrades
+the verdict to a flag.
+
 Note in the report anything you swept that the change itself did not
 introduce, so the reviewer knows why those lines moved.
 
@@ -146,7 +157,8 @@ the ones that survive review and rot. Trace values, not just names.
 4. Let the linter catch unused imports, then actually run it.
 5. **Vestigial values.** For each field, parameter, prop, config flag, or
    piece of state the change left behind, trace how it is written and read.
-   Flag it when:
+   Follow it to its consumers; a symbol that is written on every path and read
+   on none is dead no matter how many places name it. Delete it when:
    - it is now only ever set to one constant value (the code that varied it
      is gone), so every branch reading it is effectively decided at compile
      time: delete the field and collapse the branch;
@@ -159,6 +171,13 @@ the ones that survive review and rot. Trace values, not just names.
    everywhere and its `if (excludeEmpty …)` branch is unreachable. Grep
    shows it referenced in five places; it is still dead. Remove the field,
    the branch, and the now-constant literals.
+   Some values are dead by construction rather than by accident, and those are
+   the ones a reference count will never catch: the return type of a function
+   only ever reached through a fire-and-forget scheduler, a result assembled on
+   a path whose caller discards it. Ask where each value is consumed, not
+   whether it is mentioned. Deleting one of these usually simplifies the body
+   too, since the object being built was the only reason to hold the values
+   that fed it.
 6. **Reachability.** For each conditional the change touched, ask whether
    any real input can still take each side. A branch guarding on a
    now-constant flag, an `else` for a case the new types forbid, or an
@@ -217,15 +236,22 @@ whole budget and leaves the expensive findings undiscovered. Make one pass per
 file. If you are on your third read of the same comments, you are done, and
 whatever is left is not what is wrong with this change.
 
-**The sweep does not add comments on net.** This pass removes comments; it is
-not an opportunity to document the change. If you catch yourself writing a new
-one mid-sweep, hold it to the same bar every survivor must clear, and say in the
-report that you added it and why. A sweep that ends with more comment lines than
-it started with has inverted its own purpose: the reviewer now has more to read
-because you polished it. The same standard runs backwards into the change
-itself. A diff whose new code is half comment does not need a stricter audit
-here, it needed fewer comments written in the first place, and the fix is to
-delete them rather than to justify each one.
+**The sweep never adds comments. Not one, not ever, no exceptions.** This pass
+removes comments; it is not an opportunity to document the change, even when a
+fix from an earlier pass leaves behind something a future reader could
+misread. If you catch yourself about to write a new one mid-sweep, that is the
+same signal as finding a bug: stop, and do not add it. Flag it to the user
+instead, by file and line, with the exact fact it would carry, and let them
+decide whether it belongs in the code, in the commit message, or nowhere. "I
+checked it against the keep bar and it earns its place" is not a license to
+add it yourself — you are both the author and the judge of that claim, which
+is exactly why it needs a second opinion before it lands, not a self-review.
+A sweep that ends with more comment lines than it started with has inverted
+its own purpose: the reviewer now has more to read because you polished it.
+The same standard runs backwards into the change itself. A diff whose new
+code is half comment does not need a stricter audit here, it needed fewer
+comments written in the first place, and the fix is to delete them rather
+than to justify each one.
 
 Read every comment in the swept files, every one and not only the comments
 this change wrote, and apply the test: **does this state something the code
@@ -346,6 +372,16 @@ a test changes color, you have found one of the edge-case deltas that pass 1
 told you to enumerate. Decide whether the new behavior or the test is right,
 then report it either way.
 
+One red is worth naming because it looks like an edge-case delta and is not. An
+extraction can move a seam that a test was asserting across, so the test fails
+while the behavior is identical: it mocked the module the code used to live in,
+and the logic now lives one module over. The fix is to re-point the test at the
+new boundary, usually by mocking one level lower so the extracted code runs for
+real. Do not relocate the assertion to a thinner one, and do not let the
+guarantee it was pinning quietly become nobody's job. If you cannot keep the
+guarantee covered where it was, the extraction costs more than the duplication
+did: revert it and report why.
+
 Green gates prove the sweep was safe. They do not prove it was thorough.
 
 ## If you find a bug
@@ -360,6 +396,11 @@ A pre-existing defect is not the same as an edge-case delta introduced by a
 pass 1 replacement, and not the same as a semantic slip the change itself
 introduced that pass 2 caught. Flag the first, report the second, fix the
 third.
+
+Pass 4 runs on the same rule: a comment you want to write is a claim about
+the code, and a sweep does not get to unilaterally decide its own claims are
+correct. Flag it exactly like a bug, and let it land somewhere only if the
+user says so.
 
 ## Commits
 
@@ -383,9 +424,10 @@ Three things the report must include that are easy to omit:
   and found nothing must not look identical to one that never hunted.
 - **Every edge-case delta** a replacement introduced, input by input.
 - **The comment count, before and after.** One line: how many comments the
-  swept files carried when you started, how many they carry now, and every
-  comment you added with the fact it earns its place on. If the number went up,
-  lead with that rather than burying it, and justify each addition.
+  swept files carried when you started, how many they carry now. It must
+  never go up. If it did, that is a rule violation to name and undo, not a
+  footnote to justify, and any comment you wanted to add but didn't goes in
+  the report as a flagged suggestion instead, the same as a found bug.
 
 If the entire report is comment trims, say that plainly rather than presenting
 it as a finished sweep. Sometimes it is the honest answer on a small diff. More

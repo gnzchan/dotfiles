@@ -271,6 +271,7 @@ surviving clause to where it belongs if the header sat far from it.
 | Explains what the next line does | A constraint that spans files ("1536 must match the vector column and the RPC") |
 | Talks to the PR reviewer ("this is now safe because...") | Distinguishes near-identical siblings only when the names cannot ("cosine, 1 = identical" on a `number` return) |
 | Justifies a visible construct with its textbook benefit ("derived from the canonical list so the two can't drift" above `...CANONICAL.map(...)`) | A non-obvious consequence of the construct ("adding a platform here also makes it importable; that is intentional") |
+| Explains why this replaced a simpler version ("used to redirect straight through; changed after a bug report") | An invariant true no matter how the code got here ("RLS lets staff read every org, so this filter is what scopes a read to one client") |
 
 The "compares to code that no longer exists" row deserves emphasis: it is
 the easiest one to write during a refactor and the most useless one a month
@@ -290,6 +291,16 @@ a reason the code can't show, or when the consequence is non-obvious. The
 same applies to a comment that duplicates an adjacent user-facing string:
 an error message or UI label that already explains the situation needs no
 comment restating it.
+
+**A comment that justifies a diff belongs in the commit message, not the
+file.** Some comments pass every test above and are still wrong to keep: why
+this replaced something simpler, the incident that motivated it, the theory
+behind the fix. That answers "why did this change," which the commit message
+already answers, permanently, without costing every future reader who never
+heard of the incident. Test: strip away all memory of the previous version.
+Does a reader with no history still need the fact to use the code safely? If
+it only matters to someone reconstructing what happened, cut it; if it is an
+invariant the code depends on regardless of history, keep it.
 
 **Reach for a rename before reaching for a comment.** A comment that exists to
 explain what a name means is a naming bug wearing a disguise. `strandedRows`

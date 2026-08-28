@@ -48,9 +48,9 @@
   "auto_indent_on_paste": true,
   "show_edit_predictions": true,
   "icon_theme": {
-    "mode": "system",
+    "mode": "dark",
     "light": "Material Icon Theme",
-    "dark": "Zed (Default)"
+    "dark": "Material Icon Theme"
   },
   "base_keymap": "VSCode",
   "ui_font_size": 14.0,
